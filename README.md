@@ -19,7 +19,7 @@ Ce système permet de surveiller la température, l'humidité et la pression atm
 - 🔄 Câbles dupont mâle-femelle pour les connexions GPIO
 - ⚡ Alimentation 5V pour le Raspberry Pi
 - 📦 Boîtier pour le Raspberry Pi et le module relais (Répertoire 3D)
-
+##
 ## 🔧 Installation physique
 
 ### 🌡️ Connexions du BME280 sur ESP32
@@ -57,7 +57,7 @@ Assurez-vous qu'il n'y a pas de cavalier connecté sur le VCC (5V) du relais.
 ##### 3. 📦 Installer le Raspberry Pi et le module relais dans un boîtier (Répertoire 3D)
 ##### 4. 📡 S'assurer que les deux systèmes sont à portée du signal WiFi
 ##### 5. 🔌 Connecter les appareils à contrôler (ventilateurs, chauffage, etc.) aux relais
-
+##
 ## 💻 Installation logicielle
 
 ### 🔔 Configuration de Pushover
@@ -148,8 +148,8 @@ HTTPClient
 source /home/votre_nom_utilisateur/env/bin/activate
 python /home/votre_nom_utilisateur/gestion_serre.py
 ```
-
-### 🫐 Configuration du Raspberry Pi Zero W
+##
+## 🫐 Configuration du Raspberry Pi Zero W
 
 ##### 1. 💿 Installer Raspberry Pi OS Lite sur la carte microSD
 ##### 2. 🔑 Activer SSH et WiFi lors de l'installation initiale
@@ -200,7 +200,7 @@ python /home/votre_nom_utilisateur/gestion_serre.py
    sudo systemctl enable serre.service
    sudo systemctl start serre.service
 ```
-
+##
 ## ✨ Fonctionnalités
 
 - 📊 Surveillance continue de la température, humidité et pression
@@ -211,7 +211,7 @@ python /home/votre_nom_utilisateur/gestion_serre.py
 - 🎮 Contrôle automatique via relais des équipements
 - 🖥️ Interface de gestion sur le Raspberry Pi
 - 🤖 Automatisation basée sur les données du capteur BME280
-
+##
 ## 🛠️ Maintenance
 
 ### 🔧 Maintenance générale
@@ -230,7 +230,7 @@ python /home/votre_nom_utilisateur/gestion_serre.py
 ```bash
   sudo apt update && sudo apt upgrade
 ```
-
+##
 ## ❗ Dépannage
 
 ##### 1. 🌡️ Si le BME280 n'est pas détecté :
