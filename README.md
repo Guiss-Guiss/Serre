@@ -1,11 +1,7 @@
 # 🌱 Système de surveillance de serre
-
 Ce système permet de surveiller la température, l'humidité et la pression atmosphérique dans une serre, avec des alertes en cas de conditions critiques et contrôle automatique via un Raspberry Pi Zero W.
 #
-#
-#
 ## 📦 Matériel requis
-#
 #
 ### 📊 Système de surveillance
 - 🔌 ESP32 (board compatible Arduino)
@@ -14,7 +10,6 @@ Ce système permet de surveiller la température, l'humidité et la pression atm
 - ⚡ Alimentation USB pour l'ESP32
 - 🏠 Boîtier (Répertoire 3D)
 #
-
 ### 🎮 Système de contrôle
 - 🫐 Raspberry Pi Zero W
 - 💾 Carte microSD
@@ -22,16 +17,11 @@ Ce système permet de surveiller la température, l'humidité et la pression atm
 - 🔄 Câbles dupont mâle-femelle pour les connexions GPIO
 - ⚡ Alimentation 5V pour le Raspberry Pi
 - 📦 Boîtier pour le Raspberry Pi et le module relais (Répertoire 3D)
-
-#
 #
 ## 🔧 Installation physique
 #
-#
 ### 🌡️ Connexions du BME280 sur ESP32
-
 Le capteur BME280 utilise le protocole I2C avec les connexions suivantes sur l'ESP32 :
-
 - VIN → 3.3V
 - GND → GND
 - SDA → Pin 21
@@ -40,7 +30,6 @@ Le capteur BME280 utilise le protocole I2C avec les connexions suivantes sur l'E
 Le module relais 4 canaux (5V 30A) se connecte aux GPIO du Raspberry Pi Zero W comme suit :
 #
 #### 🔌 Alimentation et contrôle
-
 GND → Pin 6 (GND)
 #
 #### 🎮 Connexions des relais
@@ -63,8 +52,6 @@ Assurez-vous qu'il n'y a pas de cavalier connecté sur le VCC (5V) du relais.
 ##### 3. 📦 Installer le Raspberry Pi et le module relais dans un boîtier (Répertoire 3D)
 ##### 4. 📡 S'assurer que les deux systèmes sont à portée du signal WiFi
 ##### 5. 🔌 Connecter les appareils à contrôler (ventilateurs, chauffage, etc.) aux relais
-#
-#
 #
 ## 💻 Installation logicielle
 #
@@ -203,7 +190,6 @@ python /home/votre_nom_utilisateur/gestion_serre.py
 ```
 ##### 9. ⚙️ Vérifier le fichier gestion_serre.py  à la ligne 92 pour y modifier **http://192.168.1.121/donnees** avec l'adresse IP du ESP32
 #
-#
 ## ▶️ Activer et démarrer le service :
 ```bash
    sudo systemctl enable serre.service
@@ -239,7 +225,6 @@ python /home/votre_nom_utilisateur/gestion_serre.py
 ```bash
   sudo apt update && sudo apt upgrade
 ```
-#
 #
 ## ❗ Dépannage
 
