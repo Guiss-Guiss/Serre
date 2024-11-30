@@ -1,0 +1,5 @@
+RPi.GPIO
+requests
+flask
+flask_cors
+pushover

@@ -1,15 +1,19 @@
 # 🌱 Système de surveillance de serre
-##
-Ce système permet de surveiller la température, l'humidité et la pression atmosphérique dans une serre, avec des alertes en cas de conditions critiques et contrôle automatique via un Raspberry Pi Zero W.
 
+Ce système permet de surveiller la température, l'humidité et la pression atmosphérique dans une serre, avec des alertes en cas de conditions critiques et contrôle automatique via un Raspberry Pi Zero W.
+#
+#
+#
 ## 📦 Matériel requis
-##
+#
+#
 ### 📊 Système de surveillance
 - 🔌 ESP32 (board compatible Arduino)
 - 🌡️ Capteur BME280 (température, humidité, pression)
 - 🔄 Câbles dupont femelle-femelle pour les connexions I2C
 - ⚡ Alimentation USB pour l'ESP32
 - 🏠 Boîtier (Répertoire 3D)
+#
 
 ### 🎮 Système de contrôle
 - 🫐 Raspberry Pi Zero W
@@ -19,20 +23,26 @@ Ce système permet de surveiller la température, l'humidité et la pression atm
 - ⚡ Alimentation 5V pour le Raspberry Pi
 - 📦 Boîtier pour le Raspberry Pi et le module relais (Répertoire 3D)
 
+#
+#
 ## 🔧 Installation physique
 #
+#
 ### 🌡️ Connexions du BME280 sur ESP32
+
 Le capteur BME280 utilise le protocole I2C avec les connexions suivantes sur l'ESP32 :
+
 - VIN → 3.3V
 - GND → GND
 - SDA → Pin 21
 - SCL → Pin 22
 ### ⚡ Connexions du module relais sur Raspberry Pi
 Le module relais 4 canaux (5V 30A) se connecte aux GPIO du Raspberry Pi Zero W comme suit :
-
+#
 #### 🔌 Alimentation et contrôle
-GND → Pin 6 (GND)
 
+GND → Pin 6 (GND)
+#
 #### 🎮 Connexions des relais
 Par défaut, les relais sont configurés comme suit :
 
@@ -45,7 +55,7 @@ Par défaut, les relais sont configurés comme suit :
 
 Le module relais est actif à l'état bas (LOW)
 Assurez-vous qu'il n'y a pas de cavalier connecté sur le VCC (5V) du relais.
-
+##
 ### 📍 Positionnement
 
 ##### 1. 🌡️ Placer le capteur BME280 à l'abri du soleil direct et des projections d'eau
@@ -53,7 +63,9 @@ Assurez-vous qu'il n'y a pas de cavalier connecté sur le VCC (5V) du relais.
 ##### 3. 📦 Installer le Raspberry Pi et le module relais dans un boîtier (Répertoire 3D)
 ##### 4. 📡 S'assurer que les deux systèmes sont à portée du signal WiFi
 ##### 5. 🔌 Connecter les appareils à contrôler (ventilateurs, chauffage, etc.) aux relais
-
+#
+#
+#
 ## 💻 Installation logicielle
 #
 ### 🔔 Configuration de Pushover
@@ -90,9 +102,9 @@ Assurez-vous qu'il n'y a pas de cavalier connecté sur le VCC (5V) du relais.
      - Une notification de démarrage : "🌱 Système ESP32-BME280 démarré"
      - Des alertes en cas de température critique : "🥶 ALERTE: Température critique..."
      - Des notifications de retour à la normale : "✅ RETOUR NORMAL: Température..."
-
-## ⚙️ Configuration de l'ESP32
 #
+### ⚙️ Configuration de l'ESP32
+
 ##### 1. 📥 Installer les bibliothèques Arduino requises :
 ```Wire
 Adafruit_Sensor
@@ -118,6 +130,7 @@ HTTPClient
    const float TEMP_CRITIQUE = 12.0;  // Seuil en °C
 ```
 
+#
 ### 🔄 Configuration du service système
 
 ##### 1. ⚙️ Vérifier le fichier `serre.service`  pour y modifier votre_nom_utilisateur :
@@ -144,7 +157,7 @@ HTTPClient
 source /home/votre_nom_utilisateur/env/bin/activate
 python /home/votre_nom_utilisateur/gestion_serre.py
 ```
-
+#
 ### 🫐 Configuration du Raspberry Pi Zero W
 
 ##### 1. 💿 Installer Raspberry Pi OS Lite sur la carte microSD
@@ -189,16 +202,16 @@ python /home/votre_nom_utilisateur/gestion_serre.py
    sudo usermod -a -G gpio votre_nom_utilisateur
 ```
 ##### 9. ⚙️ Vérifier le fichier gestion_serre.py  à la ligne 92 pour y modifier **http://192.168.1.121/donnees** avec l'adresse IP du ESP32
-
-## ▶️ Activer et démarrer le service :
 #
+#
+## ▶️ Activer et démarrer le service :
 ```bash
    sudo systemctl enable serre.service
    sudo systemctl start serre.service
 ```
-
-## ✨ Fonctionnalités
 #
+## ✨ Fonctionnalités
+
 - 📊 Surveillance continue de la température, humidité et pression
 - 🌐 Interface web accessible à l'adresse IP de l'ESP32
 - 🔔 Alertes Pushover en cas de température critique
@@ -207,7 +220,7 @@ python /home/votre_nom_utilisateur/gestion_serre.py
 - 🎮 Contrôle automatique via relais des équipements
 - 🖥️ Interface de gestion sur le Raspberry Pi
 - 🤖 Automatisation basée sur les données du capteur BME280
-
+#
 ## 🛠️ Maintenance
 #
 ### 🔧 Maintenance générale
@@ -215,7 +228,7 @@ python /home/votre_nom_utilisateur/gestion_serre.py
 - 📊 Contrôler les logs via la console série (115200 bauds)
 - 🔄 Le système redémarre automatiquement en cas de perte de connexion WiFi
 - ⏰ Les alertes sont envoyées au maximum toutes les 30 minutes
-
+#
 ### 🫐 Maintenance du Raspberry Pi
 - 📋 Vérifier les logs :
 ```bash
@@ -226,9 +239,10 @@ python /home/votre_nom_utilisateur/gestion_serre.py
 ```bash
   sudo apt update && sudo apt upgrade
 ```
-
-## ❗ Dépannage
 #
+#
+## ❗ Dépannage
+
 ##### 1. 🌡️ Si le BME280 n'est pas détecté :
    - Vérifier les connexions I2C
    - Le code essaiera les deux adresses (0x76 et 0x77)
