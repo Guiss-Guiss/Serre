@@ -3,7 +3,7 @@
 Ce système permet de surveiller la température, l'humidité et la pression atmosphérique dans une serre, avec des alertes en cas de conditions critiques et contrôle automatique via un Raspberry Pi Zero W.
 
 ## 📦 Matériel requis
-#
+##
 ### 📊 Système de surveillance
 - 🔌 ESP32 (board compatible Arduino)
 - 🌡️ Capteur BME280 (température, humidité, pression)
