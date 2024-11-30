@@ -44,7 +44,7 @@ Par défaut, les relais sont configurés comme suit :
 
 Le module relais est actif à l'état bas (LOW)
 Assurez-vous qu'il n'y a pas de cavalier connecté sur le VCC (5V) du relais.
-##
+#
 ### 📍 Positionnement
 
 ##### 1. 🌡️ Placer le capteur BME280 à l'abri du soleil direct et des projections d'eau
