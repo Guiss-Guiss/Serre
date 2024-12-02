@@ -236,9 +236,9 @@ class GestionnaireSerre:
         if not self.en_mode_sécurité:
             self.logger.warning("ACTIVATION DU MODE SÉCURITÉ")
             try:
-                self.contrôler_relais('chauffage', False)
-                self.contrôler_relais('ventilation', True)
-                self.contrôler_relais('brumisation', True)
+                self.contrôler_relais('chauffage', True)
+                self.contrôler_relais('ventilation', False)
+                self.contrôler_relais('brumisation', False)
                 self.contrôler_relais('eclairage', not self.est_période_jour())
                 self.logger.info("Mode sécurité appliqué avec succès")
                 
