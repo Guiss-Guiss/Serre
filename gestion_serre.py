@@ -27,8 +27,8 @@ class DonnéesEnvironnement:
 # Classe pour la gestion des notifications Pushover
 class GestionnairePushover:
     def __init__(self):
-        self.APP_TOKEN = "a6wyghegybu13ffhcuv4c5p8d8usxy"   # Remplacer par votre clé d'application
-        self.USER_KEY = "u4qgs6ppwbe1o2vbz8oxepzohyxpeh"    # Remplacer par votre clé utilisateur
+        self.APP_TOKEN = "Votre_clé_application"   # Remplacer par votre clé d'application
+        self.USER_KEY = "Votre_clé_utilisateur"    # Remplacer par votre clé utilisateur
         self.logger = logging.getLogger('serre.pushover')
         self._dernière_alerte = {
             'temp_basse': 0,
