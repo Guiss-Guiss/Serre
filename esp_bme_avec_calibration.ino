@@ -6,12 +6,12 @@
 #include <HTTPClient.h>
 
 // Paramètres WiFi
-const char* ssid = "GSUV";
-const char* password = "gu!11aume";
+const char* ssid = "Votre SSID";
+const char* password = "Votre mot de passe";
 
 // Pushover settings
-const char* pushoverToken = "a6wyghegybu13ffhcuv4c5p8d8usxy";  // Remplacez par votre token Pushover
-const char* pushoverUser = "u4qgs6ppwbe1o2vbz8oxepzohyxpeh";    // Remplacez par votre clé utilisateur
+const char* pushoverToken = "Votre jeton  d'application";  // Remplacez par votre jeton d'application Pushover
+const char* pushoverUser = "Votre clé utilisateur";  // Remplacez par votre clé utilisateur Pushover
 
 // Capteur BME280
 Adafruit_BME280 bme;
