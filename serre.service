@@ -1,0 +1,24 @@
+[Unit]
+Description=Système de Gestion de la Serre
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=votre_nom_utilisateur
+Group=gpio
+WorkingDirectory=/home/votre_nom_utilisateur
+Environment=PYTHONUNBUFFERED=1
+Environment=SERRE_CONFIG=/home/votre_nom_utilisateur/config.py
+ExecStart=/usr/bin/python3 /home/votre_nom_utilisateur/main.py
+Restart=toujours
+RestartSec=5
+TimeoutStopSec=60
+
+OnFailure=notify-email@%n.service
+
+StartLimitBurst=5
+StartLimitIntervalSec=300
+
+[Install]
+WantedBy=multi-user.target

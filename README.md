@@ -1,7 +1,7 @@
-# 🌱 Système de surveillance de serre
+# 🌱 Système de Gestion de Serre Automatisé
 
-Ce système permet de surveiller la température, l'humidité et la pression atmosphérique dans une serre, avec des alertes en cas de conditions critiques et contrôle automatique via un Raspberry Pi Zero W.
-##
+Ce système permet de surveiller et contrôler automatiquement la température, l'humidité et l'éclairage avec des alertes en cas de conditions critiques via un Raspberry Pi Zero 2W et un ESP32.
+
 ## 📦 Matériel requis
 
 ### 📊 Système de surveillance
@@ -11,254 +11,228 @@ Ce système permet de surveiller la température, l'humidité et la pression atm
 - ⚡ Alimentation USB pour l'ESP32
 - 🏠 Boîtier (Répertoire 3D)
 
-
 ### 🎮 Système de contrôle
-- 🫐 Raspberry Pi Zero W
+- 🫐 Raspberry Pi Zero 2W
 - 💾 Carte microSD
-- 🔌 Module relais 5V (4 canaux) : [Relais 4 canaux 5V 30A](https://a.co/d/dthXTfq) 
+- 🔌 Module relais 5V (4 canaux) : [Relais 4 canaux 5V 30A](https://a.co/d/dthXTfq)
 - 🔄 Câbles dupont mâle-femelle pour les connexions GPIO
 - ⚡ Alimentation 5V pour le Raspberry Pi
 - 📦 Boîtier pour le Raspberry Pi et le module relais (Répertoire 3D)
-##
-## 🔧 Installation physique
 
-### 🌡️ Connexions du BME280 sur ESP32
+## 1. Installation du système de base
 
-Le capteur BME280 utilise le protocole I2C avec les connexions suivantes sur l'ESP32 :
+### 1.1 Préparation de la carte SD
 
+1. Téléchargez le Raspberry Pi Imager depuis [raspberrypi.com/software](https://www.raspberrypi.com/software/)
+2. Lancez Raspberry Pi Imager
+3. Sélectionnez "CHOOSE OS" > "Raspberry Pi OS (other)" > "Raspberry Pi OS Lite(64-bit)"
+4. Cliquez sur l'icône ⚙️ pour configurer :
+   - Activez SSH
+   - Définissez un nom d'utilisateur et mot de passe
+   - Configurez le Wi-Fi si nécessaire
+   - Définissez le hostname (ex: serre-pi)
+   - Définissez le fuseau horaire
+
+### 1.2 Premier démarrage
+
+1. Insérez la carte SD dans le Raspberry Pi
+2. Connectez les câbles nécessaires
+3. Attendez le démarrage complet (~1 minute)
+4. Connectez-vous en SSH:
+```bash
+ssh votre_utilisateur@serre-pi
+```
+
+## 2. 🔧 Installation physique
+
+### 2.1 🌡️ Connexions du BME280 sur ESP32
+
+Le capteur BME280 utilise le protocole I2C avec les connexions suivantes :
 - VIN → 3.3V
 - GND → GND
 - SDA → Pin 21
 - SCL → Pin 22
-### ⚡ Connexions du module relais sur Raspberry Pi
-Le module relais 4 canaux (5V 30A) se connecte aux GPIO du Raspberry Pi Zero W comme suit :
 
-#### 🔌 Alimentation et contrôle
+### 2.2 ⚡ Connexions du module relais sur Raspberry Pi
 
-GND → Pin 6 (GND)
+#### 🔌 Alimentation
+- GND → Pin 6 (GND)
 
 #### 🎮 Connexions des relais
-Par défaut, les relais sont configurés comme suit :
-
 - IN1 → GPIO 17 (Pin 11) : Contrôle chauffage
 - IN2 → GPIO 23 (Pin 16) : Contrôle éclairage
 - IN3 → GPIO 22 (Pin 15) : Contrôle humidificateur
 - IN4 → GPIO 27 (Pin 13) : Contrôle ventilation
 
-🔧 Notes importantes de câblage
+🔧 Notes importantes :
+- Le module relais est actif à l'état bas (LOW)
+- Pas de cavalier sur le VCC (5V) du relais
 
-Le module relais est actif à l'état bas (LOW)
-Assurez-vous qu'il n'y a pas de cavalier connecté sur le VCC (5V) du relais.
+### 2.3 📍 Positionnement
+1. Placer le capteur BME280 à l'abri du soleil direct et des projections d'eau
+2. Positionner l'ESP32 dans son boîtier
+3. Installer le Raspberry Pi et le module relais dans leur boîtier
+4. S'assurer de la portée WiFi
+5. Connecter les appareils aux relais
 
-### 📍 Positionnement
+## 3. 💻 Installation logicielle
 
-##### 1. 🌡️ Placer le capteur BME280 à l'abri du soleil direct et des projections d'eau
-##### 2. 🔌 Positionner l'ESP32 dans un boîtier (Répertoire 3D)
-##### 3. 📦 Installer le Raspberry Pi et le module relais dans un boîtier (Répertoire 3D)
-##### 4. 📡 S'assurer que les deux systèmes sont à portée du signal WiFi
-##### 5. 🔌 Connecter les appareils à contrôler (ventilateurs, chauffage, etc.) aux relais
-##
-## 💻 Installation logicielle
+### 3.1 🔔 Configuration de Pushover
 
-### 🔔 Configuration de Pushover
-
-##### 1. 📱 Créer un compte Pushover :
-   - Rendez-vous sur [pushover.net](https://pushover.net)
-   - Créez un compte
-   - Installez l'application Pushover sur votre smartphone
-   - Connectez-vous à l'application avec vos identifiants
-
-##### 2. 🔑 Obtenir votre clé utilisateur (User Key) :
-   - Connectez-vous sur [pushover.net](https://pushover.net)
-   - Votre clé utilisateur est affichée sur la page principale
-   - Cette clé sera utilisée comme `pushoverUser` dans le code
-
-##### 3. 📲 Créer une application :
-   - Sur pushover.net, cliquez sur "Create an Application/API Token"
-   - Remplissez les informations :
-     - Name: "Surveillance Serre" (ou autre nom de votre choix)
-     - Type: Application
-     - Description: "Système de surveillance de serre"
-     - Optionnel : Uploadez une icône
-   - Validez la création
-   - Le token généré sera utilisé comme `pushoverToken` dans le code
-
-##### 4. ⚙️ Configuration dans le code ESP32 :
-```cpp
-   const char* pushoverToken = "Votre token d'application";  // Token généré à l'étape 3
-   const char* pushoverUser = "Votre clé d'utilisateur";      // Clé obtenue à l'étape 2
+1. Créer un compte sur [pushover.net](https://pushover.net)
+2. Installer l'application mobile
+3. Noter la clé utilisateur (User Key)
+4. Créer une application pour obtenir le token
+5. Configurer les tokens dans config.py :
+```python
+PUSHOVER_CONFIG = {
+    'app_token': "votre_app_token",
+    'user_key': "votre_user_key",
+    'delai_min_alerte': "30",
+}
 ```
 
-##### 5. 🧪 Test des notifications :
-   - Après le déploiement, le système enverra :
-     - Une notification de démarrage : "🌱 Système ESP32-BME280 démarré"
-     - Des alertes en cas de température critique : "🥶 ALERTE: Température critique..."
-     - Des notifications de retour à la normale : "✅ RETOUR NORMAL: Température..."
+### 3.2 Installation du système
 
-### ⚙️ Configuration de l'ESP32
-
-##### 1. 📥 Installer les bibliothèques Arduino requises :
-```Wire
-Adafruit_Sensor
-Adafruit_BME280
-WiFi
-WebServer
-HTTPClient
-```
-##### 2. 🔧 Configurer les paramètres WiFi :
-```cpp
-   const char* ssid = "Votre SSID";
-   const char* password = "Votre mot de passe";
-```
-
-##### 3. 🔔 Configurer Pushover pour les notifications :
-```cpp
-   const char* pushoverToken = "Votre jeton d'application";
-   const char* pushoverUser = "Votre clé utilisateur";
-```
-
-##### 4. 🌡️ Ajuster le seuil de température critique si nécessaire :
-```cpp
-   const float TEMP_CRITIQUE = 12.0;  // Seuil en °C
-```
-
-### 🔄 Configuration du service système
-
-##### 1. ⚙️ Vérifier le fichier `serre.service`  pour y modifier votre_nom_utilisateur :
+1. Clonez le dépôt :
 ```bash
-   [Unit]
-   Description=Service de gestion de la serre
-   After=network-online.target
-   Wants=network-online.target
-
-   [Service]
-   Type=simple
-   User=votre_nom_utilisateur
-   WorkingDirectory=/home/votre_nom_utilisateur
-   ExecStart=/bin/bash /home/votre_nom_utilisateur/start_serre.sh
-   Restart=always
-   RestartSec=30
-
-   [Install]
-   WantedBy=multi-user.target
+git clone https://votre-depot/serre.git
+cd serre
 ```
-##### 2. ⚙️ Vérifier le fichier `start_serre.sh`  pour y modifier **votre_nom_utilisateur**:
+
+2. Rendez le script d'installation exécutable :
 ```bash
-#!/bin/bash
-source /home/votre_nom_utilisateur/env/bin/activate
-python /home/votre_nom_utilisateur/gestion_serre.py
+chmod +x setup.sh
 ```
-##
-## 🫐 Configuration du Raspberry Pi Zero W
 
-##### 1. 💿 Installer Raspberry Pi OS Lite sur la carte microSD
-##### 2. 🔑 Activer SSH et WiFi lors de l'installation initiale
-##### 3. 🌐 Connecter le Raspberry Pi au réseau
-
-##### 4. 📥 Installation des dépendances système :
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   sudo apt install -y python3-venv python3-pip git
-   ```
-
-##### 5. 🐍 Créer l'environnement Python :
-   ```bash
-   cd /home/votre_nom_utilisateur
-   python3 -m venv env
-   ```
-
-##### 6. 📚 Installer les dépendances Python depuis requirements.txt :
+3. Lancez l'installation automatisée :
 ```bash
-   source env/bin/activate
-   pip install -r requirements.txt
+sudo ./setup.sh
 ```
 
-   Le fichier requirements.txt contient :
-```
-   RPi.GPIO
-   requests
-   flask
-   flask_cors
-   pushover
+Le script setup.sh effectue automatiquement :
+- mise à jour système
+- Installation des dépendances système
+- Configuration du service systemd
+- Configuration des permissions GPIO
+- Création des répertoires de logs
+
+### 3.3 Configuration du système
+
+1. Ajustez les paramètres dans config.py selon votre installation :
+```python
+# Adresse de l'ESP32
+ESP32_CONFIG = {
+    'url': "http://Adresse_ESP32/donnees",
+    'timeout': "5",
+}
+
+# Configuration Pushover
+PUSHOVER_CONFIG = {
+    'app_token': "votre_app_token",
+    'user_key': "votre_user_key",
+    'delai_min_alerte': "30",
+}
+
 ```
 
-##### 7. 📋 Copier les fichiers de service :
+### 3.4 Configuration du service
+
+1. Modifier le fichier serre.service :
 ```bash
-   sudo cp serre.service /etc/systemd/system/
-   chmod +x start_serre.sh
+sudo nano /etc/systemd/system/serre.service
 ```
 
-##### 8. 🔧 Configurer les permissions GPIO :
+2. Ajuster les permissions :
 ```bash
-   sudo usermod -a -G gpio votre_nom_utilisateur
+sudo usermod -a -G gpio votre_nom_utilisateur
 ```
-##### 9. ⚙️ Vérifier le fichier gestion_serre.py  à la ligne 92 pour y modifier **http://192.168.1.121/donnees** avec l'adresse IP du ESP32
-#
-#
-## ▶️ Activer et démarrer le service :
+
+3. Activer le service :
 ```bash
-   sudo systemctl enable serre.service
-   sudo systemctl start serre.service
+sudo systemctl enable serre.service
+sudo systemctl start serre.service
 ```
-##
-## ✨ Fonctionnalités
 
-- 📊 Surveillance continue de la température, humidité et pression
-- 🌐 Interface web accessible à l'adresse IP de l'ESP32
-- 🔔 Alertes Pushover en cas de température critique
-- 🔄 Endpoint JSON pour l'intégration avec d'autres systèmes (/donnees)
-- 📝 Logs détaillés avec horodatage
-- 🎮 Contrôle automatique via relais des équipements
-- 🖥️ Interface de gestion sur le Raspberry Pi
-- 🤖 Automatisation basée sur les données du capteur BME280
-##
-## 🛠️ Maintenance
+## 4. ✨ Fonctionnalités
 
-### 🔧 Maintenance générale
-- ✅ Vérifier régulièrement l'état physique du capteur
-- 📊 Contrôler les logs via la console série (115200 bauds)
-- 🔄 Le système redémarre automatiquement en cas de perte de connexion WiFi
-- ⏰ Les alertes sont envoyées au maximum toutes les 30 minutes
+- 📊 Surveillance continue des conditions environnementales
+- 🌐 Interface web accessible
+- 🔔 Alertes Pushover en cas de conditions critiques
+- 🔄 API REST pour l'intégration
+- 📝 Logs détaillés
+- 🎮 Contrôle automatique des équipements
+- 🤖 Automatisation intelligente
 
-### 🫐 Maintenance du Raspberry Pi
-- 📋 Vérifier les logs :
+## 5. 🛠️ Maintenance
+
+### 5.1 Maintenance générale
+- Vérification régulière des capteurs
+- Contrôle des logs
+- Mises à jour système
+
+### 5.2 Commandes utiles
 ```bash
-  sudo journalctl -u serre.service
-```
-- ⚡ Contrôler l'état des relais périodiquement
-- 🔄 Maintenir le système à jour :
-```bash
-  sudo apt update && sudo apt upgrade
-```
-##
-## ❗ Dépannage
+# Voir les logs
+sudo journalctl -u serre.service
 
-##### 1. 🌡️ Si le BME280 n'est pas détecté :
+# Redémarrer le service
+sudo systemctl restart serre.service
+
+# Mise à jour système
+sudo apt update && sudo apt upgrade
+```
+
+## 6. ❗ Dépannage
+
+### 6.1 Problèmes courants
+
+1. BME280 non détecté :
    - Vérifier les connexions I2C
-   - Le code essaiera les deux adresses (0x76 et 0x77)
+   - Tester les adresses 0x76 et 0x77
 
-##### 2. 📡 Problèmes de WiFi :
-   - L'ESP32 fait 20 tentatives avant de redémarrer
-   - Vérifier la force du signal dans la serre
-
-##### 3. 🔔 Si Pushover ne fonctionne pas :
-   - Vérifier les tokens dans le code
+2. Problèmes WiFi :
+   - Vérifier la force du signal
    - Contrôler les logs
 
-##### 4. ⚡ Problèmes avec les relais :
-   - Vérifier les connexions GPIO
-   - Contrôler les logs du service
-   - Test manuel des relais :
-   
+3. Pushover :
+   - Vérifier les tokens
+   - Contrôler les logs d'envoi
+
+4. Relais :
+   - Test manuel des GPIO :
 ```python
-   import RPi.GPIO as GPIO
-   GPIO.setmode(GPIO.BCM)
-   GPIO.setup(17, GPIO.OUT)
-   GPIO.output(17, GPIO.LOW)  # Active le relais
-   GPIO.output(17, GPIO.HIGH)   # Désactive le relais
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(17, GPIO.OUT)
+GPIO.output(17, GPIO.LOW)  # Active
+GPIO.output(17, GPIO.HIGH) # Désactive
 ```
 
-##### 5. 🫐 Si le Raspberry Pi ne répond pas :
+5. Raspberry Pi :
    - Vérifier l'alimentation
-   - Contrôler la connexion réseau
+   - Contrôler le réseau
    - Examiner les logs système
+
+### 6.2 Logs et diagnostics
+
+- Logs service : `sudo journalctl -u serre.service`
+- Logs application : `/var/log/serre/serre.log`
+- État du service : `sudo systemctl status serre.service`
+
+## 7. API REST
+
+Endpoint principal : `GET /api/serre`
+```json
+{
+    "temperature": "22.5",
+    "humidite": "55.0",
+    "pression": "1013.2",
+    "chauffage": false,
+    "eclairage": true,
+    "ventilation": false,
+    "brumisation": false,
+    "mode_securite": false,
+    "derniere_mise_a_jour": "2024-01-01T12:00:00"
+}
+```
