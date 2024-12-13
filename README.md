@@ -91,12 +91,29 @@ PUSHOVER_CONFIG = {
     'delai_min_alerte': "30",
 }
 ```
+### 3.2 Configuration du système
 
-### 3.2 Installation du système
+1. Ajustez les paramètres dans config.py selon votre installation :
+```python
+# Adresse de l'ESP32
+ESP32_CONFIG = {
+    'url': "http://Adresse_ESP32/donnees",
+    'timeout': "5",
+}
+
+# Configuration Pushover
+PUSHOVER_CONFIG = {
+    'app_token': "votre_app_token",
+    'user_key': "votre_user_key",
+    'delai_min_alerte': "30",
+}
+
+```
+### 3.3 Installation du système
 
 1. Clonez le dépôt :
 ```bash
-git clone https://votre-depot/serre.git
+git clone https://github.com/Guiss-Guiss/Serre.git
 cd serre
 ```
 
@@ -117,41 +134,6 @@ Le script setup.sh effectue automatiquement :
 - Configuration des permissions GPIO
 - Création des répertoires de logs
 
-### 3.3 Configuration du système
-
-1. Ajustez les paramètres dans config.py selon votre installation :
-```python
-# Adresse de l'ESP32
-ESP32_CONFIG = {
-    'url': "http://Adresse_ESP32/donnees",
-    'timeout': "5",
-}
-
-# Configuration Pushover
-PUSHOVER_CONFIG = {
-    'app_token': "votre_app_token",
-    'user_key': "votre_user_key",
-    'delai_min_alerte': "30",
-}
-
-```
-
-### 3.4 Configuration du service
-
-1. Modifier le fichier serre.service :
-```bash
-sudo nano /etc/systemd/system/serre.service
-```
-
-2. Ajuster les permissions :
-```bash
-sudo usermod -a -G gpio votre_nom_utilisateur
-```
-
-3. Activer le service :
-```bash
-sudo systemctl enable serre.service
-sudo systemctl start serre.service
 ```
 
 ## 4. ✨ Fonctionnalités
