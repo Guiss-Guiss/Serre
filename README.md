@@ -75,16 +75,46 @@ Le capteur BME280 utilise le protocole I2C avec les connexions suivantes :
 4. S'assurer de la portée WiFi
 5. Connecter les appareils aux relais
 
-## 3. 💻 Installation logicielle
+## 3. 🚀 Installation
 
-### 3.1 🔔 Configuration de Pushover
+### 3.1 Configuration de l'ESP32
+
+1. Installez l'IDE Arduino : [arduino.cc/en/software](https://www.arduino.cc/en/software)
+
+2. Installez le support ESP32 dans l'IDE Arduino :
+   - Ouvrez Fichier > Préférences
+   - Ajoutez `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json` au champ "URLs de gestionnaire de cartes supplémentaires"
+   - Ouvrez Outils > Type de carte > Gestionnaire de cartes...
+   - Recherchez "esp32" et installez la dernière version
+
+3. Installez les bibliothèques requises :
+   - Ouvrez Croquis > Inclure une bibliothèque > Gérer les bibliothèques...
+   - Installez les bibliothèques suivantes :
+     - Adafruit BME280 Library
+     - Adafruit Unified Sensor
+
+4. Configurez le code ESP32 :
+   - Ouvrez le fichier `esp32_firmware/esp_bme_logging.ino`
+   - Modifiez les paramètres WiFi avec vos informations :
+```cpp
+const char* ssid = "VOTRE_SSID_WIFI";
+const char* password = "VOTRE_MOT_DE_PASSE_WIFI";
+```
+
+5. Téléversez le code sur votre ESP32 :
+   - Sélectionnez le bon port et le bon type de carte
+   - Cliquez sur le bouton de téléversement
+   - Notez l'adresse IP affichée dans le moniteur série
+   - Utilisez cette adresse IP dans la configuration du Raspberry Pi
+
+### 3.2 🔔 Configuration de Pushover
 
 1. Créer un compte sur [pushover.net](https://pushover.net)
 2. Installer l'application mobile
 3. Noter la clé utilisateur (User Key)
 4. Créer une application pour obtenir le token
 
-### 3.2 Configuration du système
+### 3.3 Configuration du système
 
 1. Ajustez les paramètres dans config.py selon votre installation :
 ```python
@@ -104,8 +134,7 @@ PUSHOVER_CONFIG = {
 }
 ```
 
-
-### 3.3 Installation du système
+### 3.4 Installation du système
 
 1. Clonez le dépôt :
 ```bash
@@ -129,8 +158,6 @@ Le script setup.sh effectue automatiquement :
 - Configuration du service systemd
 - Configuration des permissions GPIO
 - Création des répertoires de logs
-
-```
 
 ## 4. ✨ Fonctionnalités
 
