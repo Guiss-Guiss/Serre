@@ -13,7 +13,7 @@ class ControleurSerre:
     def __init__(self):
         self.logger = logging.getLogger("serre.controller")
         self.pushover = ServicePushover()
-        self.systemd = ServiceSystemd(cleanup_handler=self.nettoyer)
+        self.systemd = ServiceSystemd(gestion_nettoyage=self.nettoyer)
         
         self.en_mode_sécurité = False
         self.alerte_temp_haute = False
@@ -55,29 +55,98 @@ class ControleurSerre:
                 raise ErreurRelais(f"Échec contrôle relais {nom_relais}")
 
     def lire_capteur(self) -> Optional[DonnéesEnvironnement]:
-        try:
-            import requests
-            response = requests.get(
-                ESP32_CONFIG['url'],
-                timeout=int(ESP32_CONFIG['timeout'])
-            )
-            
-            if response.status_code != 200:
-                raise ErreurCapteur(f"Erreur HTTP: {response.status_code}")
+        import requests
+        from requests.exceptions import RequestException
+        import time
+        
+        max_tentatives = 3  # Nombre maximum de tentatives de connexion
+        délai_entre_tentatives = 2  # Délai en secondes entre chaque tentative
+        
+        for tentative in range(1, max_tentatives + 1):
+            try:
+                self.logger.debug(f"Tentative de lecture capteur {tentative}/{max_tentatives}")
                 
-            données = response.json()
-            
-            self._dernieres_donnees = DonnéesEnvironnement(
-                température=float(données['temperature']),
-                humidité=float(données['humidite']),
-                pression=float(données['pression']) * 10
-            )
-            
-            return self._dernieres_donnees
-            
-        except Exception as e:
-            self.logger.error(f"Erreur lecture capteur: {str(e)}")
-            raise ErreurCapteur(f"Échec lecture capteur: {str(e)}")
+                response = requests.get(
+                    ESP32_CONFIG['url'],
+                    timeout=int(ESP32_CONFIG['timeout'])
+                )
+                
+                if response.status_code != 200:
+                    self.logger.warning(f"Erreur HTTP: {response.status_code} (tentative {tentative}/{max_tentatives})")
+                    if tentative < max_tentatives:
+                        time.sleep(délai_entre_tentatives)
+                        continue
+                    raise ErreurCapteur(f"Erreur HTTP: {response.status_code}")
+                    
+                données = response.json()
+                
+                # Validation des données reçues
+                if not all(k in données for k in ['temperature', 'humidite', 'pression']):
+                    self.logger.warning(f"Données incomplètes reçues: {données.keys()} (tentative {tentative}/{max_tentatives})")
+                    if tentative < max_tentatives:
+                        time.sleep(délai_entre_tentatives)
+                        continue
+                    raise ErreurCapteur("Données incomplètes reçues du capteur")
+                
+                try:
+                    température = float(données['temperature'])
+                    humidité = float(données['humidite'])
+                    pression = float(données['pression']) * 10
+                    
+                    # Vérification des valeurs dans des limites raisonnables
+                    from config import LIMITES
+                    if not (LIMITES.TEMP_MIN <= température <= LIMITES.TEMP_MAX):
+                        self.logger.warning(f"Température hors limites: {température}°C (tentative {tentative}/{max_tentatives})")
+                        if tentative < max_tentatives:
+                            time.sleep(délai_entre_tentatives)
+                            continue
+                        raise ErreurCapteur(f"Température invalide: {température}°C")
+                        
+                    if not (LIMITES.HUMID_MIN <= humidité <= LIMITES.HUMID_MAX):
+                        self.logger.warning(f"Humidité hors limites: {humidité}% (tentative {tentative}/{max_tentatives})")
+                        if tentative < max_tentatives:
+                            time.sleep(délai_entre_tentatives)
+                            continue
+                        raise ErreurCapteur(f"Humidité invalide: {humidité}%")
+                        
+                    if not (LIMITES.PRES_MIN <= pression <= LIMITES.PRES_MAX):
+                        self.logger.warning(f"Pression hors limites: {pression}hPa (tentative {tentative}/{max_tentatives})")
+                        if tentative < max_tentatives:
+                            time.sleep(délai_entre_tentatives)
+                            continue
+                        raise ErreurCapteur(f"Pression invalide: {pression}hPa")
+                    
+                    self._dernieres_donnees = DonnéesEnvironnement(
+                        température=température,
+                        humidité=humidité,
+                        pression=pression
+                    )
+                    
+                    self.logger.debug(f"Lecture capteur réussie: {température}°C, {humidité}%, {pression}hPa")
+                    return self._dernieres_donnees
+                    
+                except (ValueError, TypeError) as e:
+                    self.logger.warning(f"Erreur de conversion des données: {str(e)} (tentative {tentative}/{max_tentatives})")
+                    if tentative < max_tentatives:
+                        time.sleep(délai_entre_tentatives)
+                        continue
+                    raise ErreurCapteur(f"Erreur de conversion des données: {str(e)}")
+                
+            except RequestException as e:
+                self.logger.warning(f"Erreur de connexion au capteur: {str(e)} (tentative {tentative}/{max_tentatives})")
+                if tentative < max_tentatives:
+                    time.sleep(délai_entre_tentatives)
+                    continue
+                self.logger.error(f"Échec des {max_tentatives} tentatives de connexion au capteur")
+                raise ErreurCapteur(f"Échec de connexion au capteur après {max_tentatives} tentatives: {str(e)}")
+                
+            except Exception as e:
+                self.logger.warning(f"Erreur inattendue: {str(e)} (tentative {tentative}/{max_tentatives})")
+                if tentative < max_tentatives:
+                    time.sleep(délai_entre_tentatives)
+                    continue
+                self.logger.error(f"Échec des {max_tentatives} tentatives de lecture capteur")
+                raise ErreurCapteur(f"Échec lecture capteur: {str(e)}")
 
     def est_période_jour(self) -> bool:
         heure_actuelle = datetime.now().time()

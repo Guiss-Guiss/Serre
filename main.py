@@ -1,23 +1,38 @@
+# main.py
+"""
+Point d'entrée principal de l'application.
+"""
+
 import threading
 import time
 from typing import Optional
 from services.logging_service import ServiceLogging
 from controllers.serre_controller import ControleurSerre
 from controllers.api_controller import ControleurAPI
-from models.exceptions import CapteurError
+from models.exceptions import ErreurCapteur
 from services.pushover_service import NotificationMessage
 
 class Application:
+    """
+    Classe principale de l'application.
+    
+    Gère le cycle de vie de l'application et coordonne
+    les différents composants.
+    """
 
     def __init__(self):
+        """Initialise l'application."""
+        # Configuration du logging
         self.logging_service = ServiceLogging("serre")
         self.logger = self.logging_service.get_logger
         
         self.logger.info("Démarrage de l'application")
         
+        # Initialisation des contrôleurs
         self.serre_controller = ControleurSerre()
         self.api_controller = ControleurAPI(self.serre_controller)
         
+        # Notification de démarrage
         notification = NotificationMessage(
             "🌱 Système de gestion de la serre démarré",
             priorité=0
@@ -27,12 +42,14 @@ class Application:
         self.echecs_consecutifs = 0
         self.SEUIL_ECHECS = 3
         
+        # Thread de contrôle
         self.thread_controle: Optional[threading.Thread] = None
 
     def boucle_controle(self) -> None:
+        """Boucle principale de contrôle."""
         self.logger.info("Démarrage de la boucle de contrôle")
         
-        while not self.serre_controller.systemd.stopping:
+        while not self.serre_controller.systemd.arret_en_cours:
             try:
                 données = self.serre_controller.lire_capteur()
                 
@@ -41,6 +58,7 @@ class Application:
                         self.logger.info(
                             f"Connexion rétablie après {self.echecs_consecutifs} échecs"
                         )
+                        # Notification de rétablissement
                         notification = NotificationMessage(
                             "✅ Connexion aux capteurs rétablie",
                             priorité=0
@@ -65,7 +83,7 @@ class Application:
                         self.serre_controller.pushover.envoyer_notification(notification)
                         self.serre_controller.mode_sécurité()
                         
-            except CapteurError as e:
+            except ErreurCapteur as e:
                 self.echecs_consecutifs += 1
                 self.logger.error(
                     f"Erreur lecture capteur (échec {self.echecs_consecutifs}/"
@@ -90,10 +108,12 @@ class Application:
                 self.serre_controller.mode_sécurité()
                 
             finally:
-                time.sleep(60)
+                time.sleep(60)  # Attente d'une minute entre les lectures
 
     def démarrer(self) -> None:
+        """Démarre l'application."""
         try:
+            # Démarrage du thread de contrôle
             self.thread_controle = threading.Thread(
                 target=self.boucle_controle,
                 daemon=True
@@ -101,6 +121,7 @@ class Application:
             self.thread_controle.start()
             self.logger.info("Thread de contrôle démarré")
             
+            # Démarrage de l'API
             self.logger.info("Démarrage de l'API")
             self.api_controller.démarrer()
             
@@ -114,6 +135,7 @@ class Application:
             raise
 
     def arrêter(self) -> None:
+        """Arrête l'application."""
         self.logger.info("Arrêt de l'application")
         notification = NotificationMessage(
             "⚠️ Arrêt du système de gestion de la serre",
@@ -127,6 +149,7 @@ class Application:
         self.serre_controller.nettoyer()
 
 def main():
+    """Point d'entrée du programme."""
     app = Application()
     try:
         app.démarrer()
