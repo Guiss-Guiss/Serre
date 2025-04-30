@@ -52,13 +52,16 @@ HORAIRES: Final[Dict[str, int]] = {
 }
 
 ESP32_CONFIG: Final[Dict[str, str]] = {
-    'url': "http://adresse_IP_du_ESP32/donnees",
-    'timeout': "5",
+    'url': "http://ADRESSE_IP_ESP32/donnees",  # À remplacer par l'adresse IP réelle de l'ESP32
+    'timeout': "10",  # Augmentation du timeout pour améliorer la stabilité
+    'retry_delay': "2",  # Délai entre les tentatives de connexion en secondes
+    'max_retries': "3",  # Nombre maximum de tentatives de connexion
 }
 
+# Configuration des notifications
 PUSHOVER_CONFIG: Final[Dict[str, str]] = {
-    'app_token': "votre_app_token",
-    'user_key': "votre_user_key",
+    'app_token': "VOTRE_APP_TOKEN",  # À remplacer par votre token Pushover
+    'user_key': "VOTRE_USER_KEY",    # À remplacer par votre clé utilisateur Pushover
     'delai_min_alerte': "30",
 }
 

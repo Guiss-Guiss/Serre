@@ -83,32 +83,28 @@ Le capteur BME280 utilise le protocole I2C avec les connexions suivantes :
 2. Installer l'application mobile
 3. Noter la clé utilisateur (User Key)
 4. Créer une application pour obtenir le token
-5. Configurer les tokens dans config.py :
-```python
-PUSHOVER_CONFIG = {
-    'app_token': "votre_app_token",
-    'user_key': "votre_user_key",
-    'delai_min_alerte': "30",
-}
-```
+
 ### 3.2 Configuration du système
 
 1. Ajustez les paramètres dans config.py selon votre installation :
 ```python
 # Adresse de l'ESP32
 ESP32_CONFIG = {
-    'url': "http://Adresse_ESP32/donnees",
-    'timeout': "5",
+    'url': "http://ADRESSE_IP_ESP32/donnees",  # À remplacer par l'adresse IP réelle de l'ESP32
+    'timeout': "10",  # Augmentation du timeout pour améliorer la stabilité
+    'retry_delay': "2",  # Délai entre les tentatives de connexion en secondes
+    'max_retries': "3",  # Nombre maximum de tentatives de connexion
 }
 
 # Configuration Pushover
 PUSHOVER_CONFIG = {
-    'app_token': "votre_app_token",
-    'user_key': "votre_user_key",
+    'app_token': "VOTRE_APP_TOKEN",  # À remplacer par votre token Pushover
+    'user_key': "VOTRE_USER_KEY",    # À remplacer par votre clé utilisateur Pushover
     'delai_min_alerte': "30",
 }
-
 ```
+
+
 ### 3.3 Installation du système
 
 1. Clonez le dépôt :
