@@ -1,4 +1,4 @@
-# 🌱 Système de Gestion de Serre Automatisé
+# Système de Gestion de Serre Automatisé
 
 Ce système permet de surveiller et contrôler automatiquement la température, l'humidité et l'éclairage avec des alertes en cas de conditions critiques via un Raspberry Pi Zero 2W et un ESP32.
 
@@ -77,64 +77,7 @@ Le capteur BME280 utilise le protocole I2C avec les connexions suivantes :
 
 ## 3. 🚀 Installation
 
-### 3.1 Configuration de l'ESP32
-
-1. Installez l'IDE Arduino : [arduino.cc/en/software](https://www.arduino.cc/en/software)
-
-2. Installez le support ESP32 dans l'IDE Arduino :
-   - Ouvrez Fichier > Préférences
-   - Ajoutez `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json` au champ "URLs de gestionnaire de cartes supplémentaires"
-   - Ouvrez Outils > Type de carte > Gestionnaire de cartes...
-   - Recherchez "esp32" et installez la dernière version
-
-3. Installez les bibliothèques requises :
-   - Ouvrez Croquis > Inclure une bibliothèque > Gérer les bibliothèques...
-   - Installez les bibliothèques suivantes :
-     - Adafruit BME280 Library
-     - Adafruit Unified Sensor
-
-4. Configurez le code ESP32 :
-   - Ouvrez le fichier `esp32_firmware/esp_bme_logging.ino`
-   - Modifiez les paramètres WiFi avec vos informations :
-```cpp
-const char* ssid = "VOTRE_SSID_WIFI";
-const char* password = "VOTRE_MOT_DE_PASSE_WIFI";
-```
-
-5. Téléversez le code sur votre ESP32 :
-   - Sélectionnez le bon port et le bon type de carte
-   - Cliquez sur le bouton de téléversement
-   - Notez l'adresse IP affichée dans le moniteur série
-   - Utilisez cette adresse IP dans la configuration du Raspberry Pi
-
-### 3.2 🔔 Configuration de Pushover
-
-1. Créer un compte sur [pushover.net](https://pushover.net)
-2. Installer l'application mobile
-3. Noter la clé utilisateur (User Key)
-4. Créer une application pour obtenir le token
-
-### 3.3 Configuration du système
-
-1. Ajustez les paramètres dans config.py selon votre installation :
-```python
-# Adresse de l'ESP32
-ESP32_CONFIG = {
-    'url': "http://ADRESSE_IP_ESP32/donnees",  # À remplacer par l'adresse IP réelle de l'ESP32
-    'timeout': "10",  # Augmentation du timeout pour améliorer la stabilité
-    'retry_delay': "2",  # Délai entre les tentatives de connexion en secondes
-    'max_retries': "3",  # Nombre maximum de tentatives de connexion
-}
-
-# Configuration Pushover
-PUSHOVER_CONFIG = {
-    'app_token': "VOTRE_APP_TOKEN",  # À remplacer par votre token Pushover
-    'user_key': "VOTRE_USER_KEY",    # À remplacer par votre clé utilisateur Pushover
-    'delai_min_alerte': "30",
-}
-```
-
-### 3.4 Installation du système
+### 3.1 Installation du système
 
 1. Clonez le dépôt :
 ```bash
@@ -158,6 +101,63 @@ Le script setup.sh effectue automatiquement :
 - Configuration du service systemd
 - Configuration des permissions GPIO
 - Création des répertoires de logs
+
+### 3.2 Configuration de l'ESP32
+
+1. Installez l'IDE Arduino : [arduino.cc/en/software](https://www.arduino.cc/en/software)
+
+2. Installez le support ESP32 dans l'IDE Arduino :
+   - Ouvrez Fichier > Préférences
+   - Ajoutez \`https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json\` au champ "URLs de gestionnaire de cartes supplémentaires"
+   - Ouvrez Outils > Type de carte > Gestionnaire de cartes...
+   - Recherchez "esp32" et installez la dernière version
+
+3. Installez les bibliothèques requises :
+   - Ouvrez Croquis > Inclure une bibliothèque > Gérer les bibliothèques...
+   - Installez les bibliothèques suivantes :
+     - Adafruit BME280 Library
+     - Adafruit Unified Sensor
+
+4. Configurez le code ESP32 :
+   - Ouvrez le fichier \`esp32_firmware/esp_bme_logging.ino\` depuis le dépôt cloné
+   - Modifiez les paramètres WiFi avec vos informations :
+```cpp
+const char* ssid = "VOTRE_SSID_WIFI";
+const char* password = "VOTRE_MOT_DE_PASSE_WIFI";
+```
+
+5. Téléversez le code sur votre ESP32 :
+   - Sélectionnez le bon port et le bon type de carte
+   - Cliquez sur le bouton de téléversement
+   - Notez l'adresse IP affichée dans le moniteur série
+   - Utilisez cette adresse IP dans la configuration du Raspberry Pi
+
+### 3.3 🔔 Configuration de Pushover
+
+1. Créer un compte sur [pushover.net](https://pushover.net)
+2. Installer l'application mobile
+3. Noter la clé utilisateur (User Key)
+4. Créer une application pour obtenir le token
+
+### 3.4 Configuration du système
+
+1. Ajustez les paramètres dans config.py selon votre installation :
+```python
+# Adresse de l'ESP32
+ESP32_CONFIG = {
+    'url': "http://ADRESSE_IP_ESP32/donnees",  # À remplacer par l'adresse IP réelle de l'ESP32
+    'timeout': "10",  # Augmentation du timeout pour améliorer la stabilité
+    'retry_delay': "2",  # Délai entre les tentatives de connexion en secondes
+    'max_retries': "3",  # Nombre maximum de tentatives de connexion
+}
+
+# Configuration Pushover
+PUSHOVER_CONFIG = {
+    'app_token': "VOTRE_APP_TOKEN",  # À remplacer par votre token Pushover
+    'user_key': "VOTRE_USER_KEY",    # À remplacer par votre clé utilisateur Pushover
+    'delai_min_alerte': "30",
+}
+```
 
 ## 4. ✨ Fonctionnalités
 
@@ -221,13 +221,13 @@ GPIO.output(17, GPIO.HIGH) # Désactive
 
 ### 6.2 Logs et diagnostics
 
-- Logs service : `sudo journalctl -u serre.service`
-- Logs application : `/var/log/serre/serre.log`
-- État du service : `sudo systemctl status serre.service`
+- Logs service : \`sudo journalctl -u serre.service\`
+- Logs application : \`/var/log/serre/serre.log\`
+- État du service : \`sudo systemctl status serre.service\`
 
 ## 7. API REST
 
-Endpoint principal : `GET /api/serre`
+Endpoint principal : \`GET /api/serre\`
 ```json
 {
     "temperature": "22.5",
